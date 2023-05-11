@@ -8,6 +8,13 @@ on:
       - "main"
 
 jobs:
+  fmt:
+    name: rust format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - run: rustfmt **/*.rs
   test:
     name: cargo test
     runs-on: ubuntu-latest
