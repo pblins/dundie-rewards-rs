@@ -24,3 +24,4 @@ passwords = { version = "3", features = ["crypto"] }
 
 [dev-dependencies]
 rstest = "0.17.0"
+diesel_migrations =  "2.0.0"
