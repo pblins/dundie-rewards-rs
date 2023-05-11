@@ -46,7 +46,7 @@ pub fn query_person_by_id(
 
 pub fn add_person(
     connection: &mut SqliteConnection,
-    new_person: NewPerson,
+    new_person: &NewPerson,
 ) -> Result<(Person, bool), ControllerError> {
     new_person.validate()?;
 
@@ -65,7 +65,7 @@ pub fn add_person(
         }
         None => {
             let added_person = diesel::insert_into(person_table)
-                .values(&new_person)
+                .values(new_person)
                 .get_result::<Person>(connection)?;
 
             set_initial_password(connection, &added_person)?;
@@ -245,4 +245,101 @@ pub fn get_currencies(connection: &mut SqliteConnection) -> Result<Vec<String>, 
         .distinct()
         .load::<String>(connection)?;
     Ok(currencies)
+}
+
+#[cfg(test)]
+mod test {
+
+    use std::env;
+
+    use diesel::prelude::*;
+    use diesel_migrations::*;
+    use passwords::PasswordGenerator;
+    use rstest::{fixture, rstest};
+
+    use crate::database::controller::{add_person, person_exists};
+    use crate::database::models::NewPerson;
+
+    const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
+    const ID_GEN: PasswordGenerator = PasswordGenerator {
+        length: 8,
+        numbers: true,
+        lowercase_letters: true,
+        uppercase_letters: true,
+        symbols: false,
+        spaces: false,
+        exclude_similar_characters: false,
+        strict: true,
+    };
+
+    #[fixture]
+    fn new_person() -> NewPerson {
+        NewPerson {
+            email: "john-doe@dm.com".to_string(),
+            name: "John Doe".to_string(),
+            role: "Salesman".to_string(),
+            currency: "USD".to_string(),
+            dept: "Sales".to_string(),
+        }
+    }
+
+    #[fixture]
+    fn test_db_connection() -> SqliteConnection {
+        let database = format!("/tmp/dundie_rewards_{}.db", ID_GEN.generate_one().unwrap());
+        env::set_var("DATABASE_URL", &database);
+
+        let mut connection =
+            SqliteConnection::establish(database.as_str()).expect("DATABASE_URL must be set");
+        let _ = &mut connection.run_pending_migrations(MIGRATIONS).unwrap();
+
+        connection
+    }
+
+    #[rstest]
+    fn positive_created_add_person(
+        mut test_db_connection: SqliteConnection,
+        new_person: NewPerson,
+    ) {
+        let (person, created) = add_person(&mut test_db_connection, &new_person).unwrap();
+
+        assert_eq!(created, true);
+        assert_eq!(new_person.name, person.name);
+    }
+
+    #[rstest]
+    fn negative_created_add_person(
+        mut test_db_connection: SqliteConnection,
+        new_person: NewPerson,
+    ) {
+        let _ = add_person(&mut test_db_connection, &new_person).unwrap();
+
+        let new_person_2 = NewPerson {
+            email: "john-doe@dm.com".to_string(),
+            name: "John Doe Update".to_string(),
+            role: "Salesman".to_string(),
+            currency: "USD".to_string(),
+            dept: "Sales".to_string(),
+        };
+
+        let (person, created) = add_person(&mut test_db_connection, &new_person_2).unwrap();
+
+        assert_eq!(created, false);
+        assert_eq!(new_person_2.name, person.name);
+    }
+
+    #[rstest]
+    fn positive_person_exists(mut test_db_connection: SqliteConnection, new_person: NewPerson) {
+        let _ = add_person(&mut test_db_connection, &new_person).unwrap();
+        let person = person_exists(&mut test_db_connection, &new_person.email);
+
+        assert_eq!(person.is_some(), true);
+    }
+
+    #[rstest]
+    fn negative_person_exists(mut test_db_connection: SqliteConnection, new_person: NewPerson) {
+        let _ = add_person(&mut test_db_connection, &new_person).unwrap();
+        let person = person_exists(&mut test_db_connection, &"test@test.com".to_string());
+
+        assert_eq!(person.is_none(), true);
+    }
 }
