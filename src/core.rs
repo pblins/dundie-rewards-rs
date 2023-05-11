@@ -55,7 +55,7 @@ pub fn load(filepath: String) -> Result<Vec<PersonOut>, CoreError> {
     for deserialize_result in rdr.deserialize() {
         let record: PersonIn = deserialize_result.expect("Error converting data");
         let (db_person, created) =
-            database::controller::add_person(&mut connection, record.into())?;
+            database::controller::add_person(&mut connection, &record.into())?;
 
         let person_balance =
             database::controller::query_balance_by_person(&mut connection, &db_person)?;
