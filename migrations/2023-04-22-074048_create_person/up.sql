@@ -4,6 +4,6 @@ CREATE TABLE person (
     email VARCHAR NOT NULL UNIQUE,
     name VARCHAR NOT NULL,
     role VARCHAR NOT NULL,
-    currency VARCHAR NOT NULL,
+    currency VARCHAR NOT NULL DEFAULT USD,
     dept VARCHAR NOT NULL
 )
