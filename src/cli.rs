@@ -9,16 +9,6 @@ use crate::auth::{authenticate_user, AuthenticationError};
 use crate::core::CoreError;
 use crate::database::models::{Person, User};
 
-pub fn app() {
-    let cli = Cli::parse();
-    match match_command(&cli) {
-        Ok(_) => (),
-        Err(error) => {
-            println!("{:?}", error)
-        }
-    }
-}
-
 #[derive(Debug)]
 pub enum CliError {
     Core(CoreError),
@@ -53,9 +43,7 @@ pub struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     #[command(about = "Loads the file to the database.", long_about = None)]
-    Load {
-        filepath: String,
-    },
+    Load { filepath: String },
     #[command(about = "Shows information about user or dept.", long_about = None)]
     Show {
         #[arg(short, long)]
@@ -79,12 +67,14 @@ enum Commands {
         #[arg(short, long)]
         email: Option<String>,
     },
+    #[command(about = "Transfer points to a specific user.", long_about = None)]
     Transfer {
         #[arg(short, long)]
         value: f32,
         #[arg(short, long)]
         to: String,
     },
+    #[command(about = "Lists movements.", long_about = None)]
     Movements,
 }
 
