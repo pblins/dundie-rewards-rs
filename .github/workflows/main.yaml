@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
-      - run: rustfmt **/*.rs
+      - run: rustfmt --check **/*.rs
   test:
     name: cargo test
     runs-on: ubuntu-latest
