@@ -1,0 +1,2 @@
+ALTER TABLE user
+ADD username VARCHAR NOT NULL

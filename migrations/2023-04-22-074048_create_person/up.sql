@@ -1,0 +1,9 @@
+-- Your SQL goes here
+CREATE TABLE person (
+    id INTEGER PRIMARY KEY NOT NULL,
+    email VARCHAR NOT NULL UNIQUE,
+    name VARCHAR NOT NULL,
+    role VARCHAR NOT NULL,
+    currency VARCHAR NOT NULL,
+    dept VARCHAR NOT NULL
+)

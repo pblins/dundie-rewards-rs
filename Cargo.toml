@@ -1,0 +1,26 @@
+[package]
+name = "dundie-rewards-rs"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.96"
+serde_valid = "0"
+chrono = { version = "0.4.24", default-features = false, features = ["clock", "std"] }
+diesel = { version = "2.0.4", features = ["sqlite", "chrono", "returning_clauses_for_sqlite_3_35"] }
+dotenvy = "0.15"
+clap = { version = "4.2.4", features = ["derive", "color"] }
+cli-table = "0.4"
+csv = "1.2"
+rand = "0.8.5"
+reqwest = {version ="0.11.17", features = ["blocking"] }
+regex = "1"
+rpassword = "7"
+slugify = "0.1.0"
+passwords = { version = "3", features = ["crypto"] }
+
+[dev-dependencies]
+rstest = "0.17.0"
