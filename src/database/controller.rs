@@ -94,7 +94,7 @@ pub fn query_person(
         let filter = person::dept.eq(&query["dept"]);
         result = person::person.filter(filter).load::<Person>(connection);
     } else {
-        result = person::person.load::<Person>(connection)
+        result = person::person.load::<Person>(connection);
     }
 
     Ok(result?)
