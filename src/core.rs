@@ -78,15 +78,15 @@ pub fn load(filepath: String) -> Result<Vec<PersonOut>, CoreError> {
 pub fn search(query: &HashMap<String, String>) -> Result<Vec<PersonOut>, CoreError> {
     let mut result: Vec<PersonOut> = Vec::new();
 
-
     let mut connection = database::connection::establish_connection()?;
     let people = database::controller::query_person(&mut connection, &query)?;
     let rates = get_rates(database::controller::get_currencies(&mut connection)?)?;
-    
+
     for person in people {
-        
-        if &person.name ==  "admin" {continue}
-        
+        if &person.name == "admin" {
+            continue;
+        }
+
         let person_balance =
             database::controller::query_balance_by_person(&mut connection, &person)?;
 
