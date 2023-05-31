@@ -2,7 +2,7 @@
 
 Rust implementation of [dundie-rewards](https://github.com/rochacbruno/dundie-rewards).
 
-## Apply database migrations [Sqlite]
+## Apply database migrations [SQLite]
 
 ```
 > export DATABASE_URL=<path-to-database-file>
